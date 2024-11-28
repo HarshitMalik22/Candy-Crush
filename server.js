@@ -135,7 +135,7 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, username: user.username },
       process.env.JWT_SECRET || 'defaultSecretKey', // Fallback secret for debugging
-      { expiresIn: '1h' }
+      // { expiresIn: '1h' }
     );
 
     res.status(200).json({
@@ -160,3 +160,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
