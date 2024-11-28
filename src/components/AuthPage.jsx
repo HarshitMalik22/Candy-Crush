@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser, loginUser } from './auth'; // Import registerUser and loginUser functions
 
 const AuthPage = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -10,16 +9,16 @@ const AuthPage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Do not redirect to the game page based on the token, always show the form
   useEffect(() => {
-    // We won't check the token here to allow the form to show regardless of login state
-  }, []); // Empty dependency array ensures this only runs once on mount
+    // This effect is empty because we no longer check the token at this stage
+  }, []); 
 
   const toggleForm = () => {
     setIsRegister(!isRegister);
     setError(''); // Reset error message when toggling between forms
   };
 
+  // Handle form submission (Login or Register)
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!username || !password) {
@@ -33,7 +32,19 @@ const AuthPage = () => {
         return;
       }
       try {
-        const response = await registerUser(username, password);
+        // Register new user
+        const response = await fetch('https://your-backend-url/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Registration failed!');
+        }
+
         alert('User registered successfully');
         setError(''); // Clear error
         navigate('/game'); // Redirect to the game page after registration
@@ -42,10 +53,27 @@ const AuthPage = () => {
       }
     } else {
       try {
-        const { token, highScore, userId } = await loginUser(username, password);
-        localStorage.setItem('token', token);
-        localStorage.setItem('userId', userId);
-        localStorage.setItem('highScore', highScore);
+        // Login existing user
+        const response = await fetch('https://your-backend-url/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+          credentials: 'include', // Add this if using cookies
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Login failed');
+        }
+
+        // Save token and other info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('highScore', data.highScore);
+
         navigate('/game'); // Redirect to the game page after login
       } catch (error) {
         setError(error.message);
@@ -123,4 +151,3 @@ const AuthPage = () => {
 };
 
 export default AuthPage;
-
