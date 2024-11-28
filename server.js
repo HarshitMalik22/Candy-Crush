@@ -78,16 +78,26 @@ app.post('/api/register', async (req, res) => {
     await newUser.save();
 
     // Create and send JWT token
-    const token = jwt.sign({ userId: newUser._id, username: newUser.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { userId: newUser._id, username: newUser.username },
+      process.env.JWT_SECRET || 'defaultSecretKey', // Fallback for debugging purposes
+      { expiresIn: '1h' }
+    );
 
+    // Send a success response with the token and user details
     res.status(201).json({
       message: 'User registered successfully',
       token,
       userId: newUser._id,
     });
+
   } catch (error) {
-    console.error('Error during registration:', error);
-    res.status(500).json({ message: 'Server error during registration' });
+    console.error('Error during registration (JWT/token generation):', error);
+
+    res.status(500).json({
+      message: 'Server error during registration',
+      error: error.message,
+    });
   }
 });
 
@@ -113,7 +123,11 @@ app.post('/api/login', async (req, res) => {
     }
 
     // Create and send JWT token
-    const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { userId: user._id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
     res.status(200).json({
       message: 'Login successful',
@@ -121,6 +135,7 @@ app.post('/api/login', async (req, res) => {
       userId: user._id,
       highScore: user.highScore,
     });
+
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Server error during login' });
