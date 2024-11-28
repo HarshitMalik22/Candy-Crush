@@ -77,23 +77,32 @@ app.post('/api/register', async (req, res) => {
 
     await newUser.save();
 
-    // Create and send JWT token
-    const token = jwt.sign(
-      { userId: newUser._id, username: newUser.username },
-      process.env.JWT_SECRET || 'defaultSecretKey', // Fallback for debugging purposes
-      { expiresIn: '1h' }
-    );
+    // Log user data for debugging
+    console.log('User data:', newUser);
 
-    // Send a success response with the token and user details
-    res.status(201).json({
-      message: 'User registered successfully',
-      token,
-      userId: newUser._id,
-    });
+    // Generate JWT Token
+    try {
+      const token = jwt.sign(
+        { userId: newUser._id, username: newUser.username },
+        process.env.JWT_SECRET || 'defaultSecretKey', // Fallback secret for debugging
+        { expiresIn: '1h' }
+      );
 
+      // Send a success response with the token and user details
+      res.status(201).json({
+        message: 'User registered successfully',
+        token,
+        userId: newUser._id,
+      });
+    } catch (error) {
+      console.error('Error during registration (JWT/token generation):', error);
+      res.status(500).json({
+        message: 'Server error during registration',
+        error: error.message,
+      });
+    }
   } catch (error) {
-    console.error('Error during registration (JWT/token generation):', error);
-
+    console.error('Error during registration:', error);
     res.status(500).json({
       message: 'Server error during registration',
       error: error.message,
@@ -125,7 +134,7 @@ app.post('/api/login', async (req, res) => {
     // Create and send JWT token
     const token = jwt.sign(
       { userId: user._id, username: user.username },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'defaultSecretKey', // Fallback secret for debugging
       { expiresIn: '1h' }
     );
 
@@ -135,7 +144,6 @@ app.post('/api/login', async (req, res) => {
       userId: user._id,
       highScore: user.highScore,
     });
-
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Server error during login' });
