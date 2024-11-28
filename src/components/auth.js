@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // Replace with your API URL
-const API_URL = 'http://localhost:5000/api'; // Update this with your backend URL
+const API_URL = 'https://candy-crush-i1me-git-main-harshitmalik22s-projects.vercel.app/api'; // Deployed backend URL
+
 
 export const registerUser = async (username, password) => {
   try {
