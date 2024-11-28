@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:3000', // Local development
-    'https://candy-crush-i1me-git-main-harshitmalik22s-projects.vercel.app/' // Deployed frontend
+    'https://candy-crush-i1me-git-main-harshitmalik22s-projects.vercel.app' // Deployed frontend
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -42,7 +42,7 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ message: 'Token is required' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET || 'defaultSecretKey', (err, user) => {
     if (err) {
       return res.status(403).json({ message: 'Invalid or expired token' });
     }
@@ -81,28 +81,20 @@ app.post('/api/register', async (req, res) => {
     console.log('User data:', newUser);
 
     // Generate JWT Token
-    try {
-      const token = jwt.sign(
-        { userId: newUser._id, username: newUser.username },
-        process.env.JWT_SECRET || 'defaultSecretKey', // Fallback secret for debugging
-        { expiresIn: '1h' }
-      );
+    const token = jwt.sign(
+      { userId: newUser._id, username: newUser.username },
+      process.env.JWT_SECRET || 'defaultSecretKey', // Fallback secret for debugging
+      { expiresIn: '1h' }
+    );
 
-      // Send a success response with the token and user details
-      res.status(201).json({
-        message: 'User registered successfully',
-        token,
-        userId: newUser._id,
-      });
-    } catch (error) {
-      console.error('Error during registration (JWT/token generation):', error);
-      res.status(500).json({
-        message: 'Server error during registration',
-        error: error.message,
-      });
-    }
+    // Send a success response with the token and user details
+    res.status(201).json({
+      message: 'User registered successfully',
+      token,
+      userId: newUser._id,
+    });
   } catch (error) {
-    console.error('Error during registration:', error);
+    console.error('Error during registration (JWT/token generation):', error);
     res.status(500).json({
       message: 'Server error during registration',
       error: error.message,
@@ -135,7 +127,7 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, username: user.username },
       process.env.JWT_SECRET || 'defaultSecretKey', // Fallback secret for debugging
-      // { expiresIn: '1h' }
+      { expiresIn: '1h' }
     );
 
     res.status(200).json({
@@ -160,4 +152,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
