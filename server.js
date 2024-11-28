@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:3000', // Local development
-    'https://candy-crush-i1me-git-main-harshitmalik22s-projects.vercel.app' // Deployed frontend
+    // 'https://candy-crush-i1me-git-main-harshitmalik22s-projects.vercel.app' // Deployed frontend
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
