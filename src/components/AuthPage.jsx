@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser, loginUser } from './auth'; // Import registerUser and loginUser functions
+import { registerUser, loginUser } from './auth';
 
 const AuthPage = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -10,14 +10,14 @@ const AuthPage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Do not redirect to the game page based on the token, always show the form
+  // Intentionally empty to always show the form
   useEffect(() => {
-    // We won't check the token here to allow the form to show regardless of login state
-  }, []); // Empty dependency array ensures this only runs once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleForm = () => {
     setIsRegister(!isRegister);
-    setError(''); // Reset error message when toggling between forms
+    setError('');
   };
 
   const handleFormSubmit = async (e) => {
@@ -26,17 +26,19 @@ const AuthPage = () => {
       setError('Username and password are required');
       return;
     }
-
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
     if (isRegister) {
       if (password !== confirmPassword) {
         setError('Passwords do not match!');
         return;
       }
       try {
-        const response = await registerUser(username, password);
-        alert('User registered successfully');
-        setError(''); // Clear error
-        navigate('/game'); // Redirect to the game page after registration
+        await registerUser(username, password);  // No need for `response`
+        setError('');
+        navigate('/game');
       } catch (error) {
         setError(error.message);
       }
@@ -46,7 +48,7 @@ const AuthPage = () => {
         localStorage.setItem('token', token);
         localStorage.setItem('userId', userId);
         localStorage.setItem('highScore', highScore);
-        navigate('/game'); // Redirect to the game page after login
+        navigate('/game');
       } catch (error) {
         setError(error.message);
       }
@@ -57,7 +59,12 @@ const AuthPage = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h2 className="text-2xl font-bold text-center mb-6">{isRegister ? 'Register' : 'Sign In'}</h2>
-        {error && <p className="text-red-500">{error}</p>}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <strong className="font-bold">Error:</strong>
+            <span className="block sm:inline"> {error}</span>
+          </div>
+        )}
         <form onSubmit={handleFormSubmit}>
           <div className="mb-4">
             <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
@@ -104,6 +111,7 @@ const AuthPage = () => {
             <button
               type="submit"
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              aria-label={isRegister ? 'Register Button' : 'Sign In Button'}
             >
               {isRegister ? 'Register' : 'Sign In'}
             </button>
