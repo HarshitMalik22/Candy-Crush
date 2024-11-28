@@ -1,14 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import AuthPage from './components/AuthPage';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import CandyCrush from './components/CandyCrush';
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Always show the AuthPage first, regardless of authentication */}
-{/*         <Route path="/" element={<AuthPage />} />
-         */}
+        {/* Redirect directly to the game page */}
+        <Route path="/" element={<Navigate to="/game" />} />
+        
         {/* Game page route */}
         <Route path="/game" element={<CandyCrush />} />
       </Routes>
