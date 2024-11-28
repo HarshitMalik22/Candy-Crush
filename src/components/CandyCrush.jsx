@@ -72,7 +72,11 @@ const CandyCrush = () => {
       const chosenColor = currentCandyArrangement[i];
 
       if (columnGroup.every(square => currentCandyArrangement[square] === chosenColor)) {
-        columnGroup.forEach(square => (currentCandyArrangement[square] = ''));
+        setCurrentCandyArrangement(prevArrangement => {
+          const updatedArrangement = [...prevArrangement];
+          columnGroup.forEach(square => (updatedArrangement[square] = ''));
+          return updatedArrangement;
+        });
         setCurrentScore(prev => prev + 4);
         return true;
       }
@@ -88,7 +92,11 @@ const CandyCrush = () => {
       if (invalidIndices.includes(i)) continue;
 
       if (rowGroup.every(square => currentCandyArrangement[square] === chosenColor)) {
-        rowGroup.forEach(square => (currentCandyArrangement[square] = ''));
+        setCurrentCandyArrangement(prevArrangement => {
+          const updatedArrangement = [...prevArrangement];
+          rowGroup.forEach(square => (updatedArrangement[square] = ''));
+          return updatedArrangement;
+        });
         setCurrentScore(prev => prev + 4);
         return true;
       }
@@ -101,7 +109,11 @@ const CandyCrush = () => {
       const chosenColor = currentCandyArrangement[i];
 
       if (columnGroup.every(square => currentCandyArrangement[square] === chosenColor)) {
-        columnGroup.forEach(square => (currentCandyArrangement[square] = ''));
+        setCurrentCandyArrangement(prevArrangement => {
+          const updatedArrangement = [...prevArrangement];
+          columnGroup.forEach(square => (updatedArrangement[square] = ''));
+          return updatedArrangement;
+        });
         setCurrentScore(prev => prev + 3);
         return true;
       }
@@ -117,7 +129,11 @@ const CandyCrush = () => {
       if (invalidIndices.includes(i)) continue;
 
       if (rowGroup.every(square => currentCandyArrangement[square] === chosenColor)) {
-        rowGroup.forEach(square => (currentCandyArrangement[square] = ''));
+        setCurrentCandyArrangement(prevArrangement => {
+          const updatedArrangement = [...prevArrangement];
+          rowGroup.forEach(square => (updatedArrangement[square] = ''));
+          return updatedArrangement;
+        });
         setCurrentScore(prev => prev + 3);
         return true;
       }
@@ -125,20 +141,24 @@ const CandyCrush = () => {
   };
 
   const fillEmptySpaces = () => {
-    for (let i = 0; i <= 55; i++) {
-      const firstRowIndices = [0, 1, 2, 3, 4, 5, 6, 7];
-      const isFirstRow = firstRowIndices.includes(i);
+    setCurrentCandyArrangement(prevArrangement => {
+      const updatedArrangement = [...prevArrangement];
+      for (let i = 0; i <= 55; i++) {
+        const firstRowIndices = [0, 1, 2, 3, 4, 5, 6, 7];
+        const isFirstRow = firstRowIndices.includes(i);
 
-      if (isFirstRow && currentCandyArrangement[i] === '') {
-        let randomIndex = Math.floor(Math.random() * candyColors.length);
-        currentCandyArrangement[i] = candyColors[randomIndex];
-      }
+        if (isFirstRow && updatedArrangement[i] === '') {
+          let randomIndex = Math.floor(Math.random() * candyColors.length);
+          updatedArrangement[i] = candyColors[randomIndex];
+        }
 
-      if (currentCandyArrangement[i + width] === '') {
-        currentCandyArrangement[i + width] = currentCandyArrangement[i];
-        currentCandyArrangement[i] = '';
+        if (updatedArrangement[i + width] === '') {
+          updatedArrangement[i + width] = updatedArrangement[i];
+          updatedArrangement[i] = '';
+        }
       }
-    }
+      return updatedArrangement;
+    });
   };
 
   const startDrag = (e) => {
@@ -153,8 +173,9 @@ const CandyCrush = () => {
     const draggedCandyId = parseInt(draggedCandy.getAttribute('data-id'));
     const replacedCandyId = parseInt(replacedCandy.getAttribute('data-id'));
 
-    currentCandyArrangement[replacedCandyId] = draggedCandy.getAttribute('src');
-    currentCandyArrangement[draggedCandyId] = replacedCandy.getAttribute('src');
+    const updatedArrangement = [...currentCandyArrangement];
+    updatedArrangement[replacedCandyId] = draggedCandy.getAttribute('src');
+    updatedArrangement[draggedCandyId] = replacedCandy.getAttribute('src');
 
     const validMoves = [
       draggedCandyId - 1,
@@ -178,10 +199,11 @@ const CandyCrush = () => {
       setDraggedCandy(null);
       setReplacedCandy(null);
       setRemainingMoves(prev => prev - 1);
+      setCurrentCandyArrangement(updatedArrangement);
     } else {
-      currentCandyArrangement[replacedCandyId] = replacedCandy.getAttribute('src');
-      currentCandyArrangement[draggedCandyId] = draggedCandy.getAttribute('src');
-      setCurrentCandyArrangement([...currentCandyArrangement]);
+      updatedArrangement[replacedCandyId] = replacedCandy.getAttribute('src');
+      updatedArrangement[draggedCandyId] = draggedCandy.getAttribute('src');
+      setCurrentCandyArrangement(updatedArrangement);
     }
   };
 
@@ -192,7 +214,7 @@ const CandyCrush = () => {
       findColumnMatchOfThree();
       findRowMatchOfThree();
       fillEmptySpaces();
-      setCurrentCandyArrangement([...currentCandyArrangement]);
+      setCurrentCandyArrangement(prev => [...prev]);
     }, 100);
     return () => clearInterval(timer);
   }, [currentCandyArrangement]);
@@ -244,3 +266,4 @@ const CandyCrush = () => {
 };
 
 export default CandyCrush;
+
