@@ -7,8 +7,15 @@ require('dotenv').config();
 
 const app = express();
 
+// CORS Configuration
+const corsOptions = {
+  origin: ['http://localhost:3000', 'https://your-vercel-url.vercel.app'], // Add both local and deployed URLs here
+  methods: ['GET', 'POST', 'PUT'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions)); // Apply CORS configuration
 app.use(express.json());
 
 // MongoDB Connection
@@ -129,4 +136,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
