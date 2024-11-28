@@ -7,15 +7,16 @@ require('dotenv').config();
 
 const app = express();
 
-// CORS Configuration
-const corsOptions = {
-  origin: ['http://localhost:3000', 'https://candy-crush-i1me-git-main-harshitmalik22s-projects.vercel.app/'], // Add both local and deployed URLs here
-  methods: ['GET', 'POST', 'PUT'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-
 // Middleware
-app.use(cors(corsOptions)); // Apply CORS configuration
+app.use(cors({
+  origin: [
+    'http://localhost:3000', // Local development
+    'https://candy-crush-i1me-git-main-harshitmalik22s-projects.vercel.app/' // Deployed frontend
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // If you're using cookies or sessions
+}));
 app.use(express.json());
 
 // MongoDB Connection
