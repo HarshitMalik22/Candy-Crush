@@ -9,7 +9,7 @@ const app = express();
 
 // CORS Configuration
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://candy-crush-i1me.vercel.app/'], // Add both local and deployed URLs here
+  origin: ['http://localhost:3000', 'https://candy-crush-i1me-git-main-harshitmalik22s-projects.vercel.app/'], // Add both local and deployed URLs here
   methods: ['GET', 'POST', 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
