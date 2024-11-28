@@ -6,8 +6,11 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        {/* Always show the AuthPage first, regardless of authentication */}
         <Route path="/" element={<AuthPage />} />
-        <Route path="/game" element={<CandyCrush />} /> {/* Game page */}
+        
+        {/* Game page route */}
+        <Route path="/game" element={<CandyCrush />} />
       </Routes>
     </Router>
   );
