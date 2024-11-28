@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { registerUser, loginUser } from './auth'; // Import registerUser and loginUser functions
 
 const AuthPage = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -10,13 +10,10 @@ const AuthPage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Check if the user is already logged in and redirect to the game page
+  // Do not redirect to the game page based on the token, always show the form
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      navigate('/game'); // Redirect to the game page if the user is logged in
-    }
-  }, [navigate]);
+    // We won't check the token here to allow the form to show regardless of login state
+  }, []); // Empty dependency array ensures this only runs once on mount
 
   const toggleForm = () => {
     setIsRegister(!isRegister);
@@ -36,25 +33,22 @@ const AuthPage = () => {
         return;
       }
       try {
-        await axios.post('http://localhost:5000/register', { username, password });
+        const response = await registerUser(username, password);
         alert('User registered successfully');
         setError(''); // Clear error
         navigate('/game'); // Redirect to the game page after registration
       } catch (error) {
-        console.error(error);
-        setError(error.response?.data?.message || 'Registration failed');
+        setError(error.message);
       }
     } else {
       try {
-        const response = await axios.post('http://localhost:5000/login', { username, password });
-        const { token, userId, highScore } = response.data;
+        const { token, highScore, userId } = await loginUser(username, password);
         localStorage.setItem('token', token);
         localStorage.setItem('userId', userId);
         localStorage.setItem('highScore', highScore);
         navigate('/game'); // Redirect to the game page after login
       } catch (error) {
-        console.error(error);
-        setError(error.response?.data?.message || 'Login failed');
+        setError(error.message);
       }
     }
   };
@@ -129,3 +123,4 @@ const AuthPage = () => {
 };
 
 export default AuthPage;
+
